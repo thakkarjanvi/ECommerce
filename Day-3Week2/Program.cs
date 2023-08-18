@@ -1,8 +1,5 @@
 using Day_3Week2.E_commerce.Context;
 using Microsoft.EntityFrameworkCore;
-using System;
-using Microsoft.Extensions.DependencyInjection;
-using Day_3Week2.Data;
 
 namespace Day_3Week2
 {
@@ -11,9 +8,7 @@ namespace Day_3Week2
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-            builder.Services.AddDbContext<Day_3Week2Context>(options =>
-                options.UseSqlServer(builder.Configuration.GetConnectionString("Day_3Week2Context") ?? throw new InvalidOperationException("Connection string 'Day_3Week2Context' not found.")));
-
+           
             // Add services to the container.
             builder.Services.AddDbContext<ECommerceDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));

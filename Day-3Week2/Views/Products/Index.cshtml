@@ -9,19 +9,25 @@
 <p>
     <a asp-action="Create">Create New</a>
 </p>
+
+<form id="filterForm" asp-action="Index" method="get">
+    <label for="inputCategoryId">Enter Category Id:</label><br />
+    <input type="number" id="inputCategoryId" name="categoryId" class="form-control w-25 d-lg-inline-flex" aria-label="Small">
+    <button type="submit" class="btn"></button>
+</form>
 <table class="table">
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Name)
+                <a class="text-decoration-none" asp-action="Index" asp-route-sortOrder="@ViewData["NameSortParam"]">Name</a>
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Price)
+                <a class="text-decoration-none" asp-action="Index" asp-route-sortOrder="@ViewData["PriceSortParam"]">Price</a>
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Category)
+                @Html.DisplayNameFor(model => model.CategoryId)
             </th>
-            <th></th>
+            <th>Actions</th>
         </tr>
     </thead>
     <tbody>
@@ -34,7 +40,7 @@
                 @Html.DisplayFor(modelItem => item.Price)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Category.Id)
+                @Html.DisplayFor(modelItem => item.CategoryId)
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |

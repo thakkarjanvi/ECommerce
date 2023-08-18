@@ -1,40 +1,62 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Day_3Week2.E_commerce.Context;
+using Day_3Week2.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Day_3Week2.Data;
-using Day_3Week2.Models;
 
 namespace Day_3Week2.Controllers
 {
     public class ProductsController : Controller
     {
-        private readonly Day_3Week2Context _context;
+        private readonly ECommerceDbContext _context;
 
-        public ProductsController(Day_3Week2Context context)
+        public ProductsController(ECommerceDbContext context)
         {
             _context = context;
         }
 
         // GET: Products
-        public async Task<IActionResult> Index()
+        public IActionResult Index(string sortOrder, int? categoryId)
         {
-            var day_3Week2Context = _context.Product.Include(p => p.Category);
-            return View(await day_3Week2Context.ToListAsync());
+            ViewData["CurrentSort"] = sortOrder;
+            ViewData["NameSortParam"] = sortOrder == "name" ? "name_desc" : "name";
+            ViewData["PriceSortParam"] = sortOrder == "price" ? "price_desc" : "price";
+            IQueryable<Product> products;
+
+            // finding product category by categoryId
+            if (categoryId != null)
+            {
+                products = GetProductsByCategory(categoryId ?? 1);
+                return View(products);
+            }
+            // sorting product by name and price
+            switch (sortOrder)
+            {
+                case "name_desc":
+                    products = GetProductsSortedByName(false);
+                    break;
+                case "price":
+                    products = GetProductsSortedByPrice(true);
+                    break;
+                case "price_desc":
+                    products = GetProductsSortedByPrice(false);
+                    break;
+                default:
+                    products = GetProductsSortedByName(true);
+                    break;
+            }
+            return View(products);
         }
 
         // GET: Products/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null || _context.Product == null)
+            if (id == null || _context.Products == null)
             {
                 return NotFound();
             }
 
-            var product = await _context.Product
+            var product = await _context.Products
                 .Include(p => p.Category)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (product == null)
@@ -72,12 +94,12 @@ namespace Day_3Week2.Controllers
         // GET: Products/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null || _context.Product == null)
+            if (id == null || _context.Products == null)
             {
                 return NotFound();
             }
 
-            var product = await _context.Product.FindAsync(id);
+            var product = await _context.Products.FindAsync(id);
             if (product == null)
             {
                 return NotFound();
@@ -125,12 +147,12 @@ namespace Day_3Week2.Controllers
         // GET: Products/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null || _context.Product == null)
+            if (id == null || _context.Products == null)
             {
                 return NotFound();
             }
 
-            var product = await _context.Product
+            var product = await _context.Products
                 .Include(p => p.Category)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (product == null)
@@ -146,23 +168,56 @@ namespace Day_3Week2.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (_context.Product == null)
+            if (_context.Products == null)
             {
                 return Problem("Entity set 'Day_3Week2Context.Product'  is null.");
             }
-            var product = await _context.Product.FindAsync(id);
+            var product = await _context.Products.FindAsync(id);
             if (product != null)
             {
-                _context.Product.Remove(product);
+                _context.Products.Remove(product);
             }
-            
+
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool ProductExists(int id)
         {
-          return (_context.Product?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (_context.Products?.Any(e => e.Id == id)).GetValueOrDefault();
+        }
+        private IQueryable<Product> GetProductsByCategory(int targetCategory)
+        {
+            var filteredProducts = _context.Products.Where(product => product.CategoryId == targetCategory);
+            return filteredProducts;
+        }
+
+        private IQueryable<Product> GetProductsSortedByPrice(bool ascending = true)
+        {
+            if (ascending)
+            {
+                var sortedProducts = _context.Products.OrderBy(product => product.Price);
+                return sortedProducts;
+            }
+            else
+            {
+                var sortedProducts = _context.Products.OrderByDescending(product => product.Price);
+                return sortedProducts;
+            }
+        }
+
+        private IQueryable<Product> GetProductsSortedByName(bool ascending = true)
+        {
+            if (ascending)
+            {
+                var sortedProducts = _context.Products.OrderBy(product => product.Name);
+                return sortedProducts;
+            }
+            else
+            {
+                var sortedProducts = _context.Products.OrderByDescending(product => product.Name);
+                return sortedProducts;
+            }
         }
     }
 }

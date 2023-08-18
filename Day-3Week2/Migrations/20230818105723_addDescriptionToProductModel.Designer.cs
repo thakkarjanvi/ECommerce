@@ -3,6 +3,7 @@ using Day_3Week2.E_commerce.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Day_3Week2.Migrations
 {
     [DbContext(typeof(ECommerceDbContext))]
-    partial class ECommerceDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230818105723_addDescriptionToProductModel")]
+    partial class addDescriptionToProductModel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -36,23 +39,6 @@ namespace Day_3Week2.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Categories");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Name = "Sports"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "Electronics"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Name = "cloths"
-                        });
                 });
 
             modelBuilder.Entity("Day_3Week2.Models.Customer", b =>
@@ -98,50 +84,6 @@ namespace Day_3Week2.Migrations
                     b.HasIndex("CategoryId");
 
                     b.ToTable("Products");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 10,
-                            CategoryId = 1,
-                            Name = "Badminton",
-                            Price = 457m
-                        },
-                        new
-                        {
-                            Id = 11,
-                            CategoryId = 2,
-                            Name = "Mouse",
-                            Price = 100m
-                        },
-                        new
-                        {
-                            Id = 12,
-                            CategoryId = 3,
-                            Name = "Suit",
-                            Price = 230m
-                        },
-                        new
-                        {
-                            Id = 13,
-                            CategoryId = 3,
-                            Name = "One-piece",
-                            Price = 436m
-                        },
-                        new
-                        {
-                            Id = 14,
-                            CategoryId = 2,
-                            Name = "Earphones",
-                            Price = 200m
-                        },
-                        new
-                        {
-                            Id = 15,
-                            CategoryId = 1,
-                            Name = "Cricket",
-                            Price = 500m
-                        });
                 });
 
             modelBuilder.Entity("Day_3Week2.Models.Product", b =>
